@@ -33,7 +33,7 @@ pipeline {
 
     environment {
         GIT_REPO         = 'https://github.com/ron1120/devops-eks-project.git'
-        AWS_REGION       = 'us-east-1'
+        AWS_REGION       = 'il-central-1'
         EKS_CLUSTER_NAME = 'devops-eks-cluster'
         APP_NAMESPACE    = 'seyoawe'
         DEPLOY_TAG       = 'latest'

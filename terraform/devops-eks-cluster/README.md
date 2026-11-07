@@ -6,8 +6,8 @@ Simple Terraform setup that provisions an EKS cluster with its own VPC and a mon
 
 ```
 VPC (10.0.0.0/16)
-├── Public Subnet 1 (10.0.1.0/24) - us-east-1a
-├── Public Subnet 2 (10.0.2.0/24) - us-east-1b
+├── Public Subnet 1 (10.0.1.0/24) - il-central-1a
+├── Public Subnet 2 (10.0.2.0/24) - il-central-1b
 ├── Internet Gateway
 ├── Route Table (0.0.0.0/0 → IGW)
 │
@@ -85,7 +85,7 @@ Then open **http://localhost:9090**
 
 | Name | Description | Default |
 |------|-------------|---------|
-| `aws_region` | AWS region | `us-east-1` |
+| `aws_region` | AWS region | `il-central-1` |
 | `project_name` | Project name for resource tagging | `devops-eks-project` |
 | `cluster_name` | Name of the EKS cluster | `devops-eks-cluster` |
 | `vpc_cidr` | CIDR block for the VPC | `10.0.0.0/16` |

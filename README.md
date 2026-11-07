@@ -91,7 +91,7 @@ terraform init && terraform apply
 cd ../..
 
 # Configure kubectl
-aws eks update-kubeconfig --name devops-eks-cluster --region us-east-1
+aws eks update-kubeconfig --name devops-eks-cluster --region il-central-1
 
 # Monitoring (Prometheus, Grafana, Loki) + app manifests
 ansible-playbook ansible/playbooks/configure-eks.yml

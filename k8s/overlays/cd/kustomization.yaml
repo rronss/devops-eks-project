@@ -5,8 +5,8 @@ resources:
   - ../../base
 images:
   - name: sawe-engine
-    newName: 403113723064.dkr.ecr.us-east-1.amazonaws.com/sawe-engine
+    newName: 403113723064.dkr.ecr.il-central-1.amazonaws.com/sawe-engine
     newTag: latest
   - name: sawe-cli
-    newName: 403113723064.dkr.ecr.us-east-1.amazonaws.com/sawe-cli
+    newName: 403113723064.dkr.ecr.il-central-1.amazonaws.com/sawe-cli
     newTag: latest

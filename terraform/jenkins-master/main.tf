@@ -127,6 +127,13 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
+# ECR repositories for the images pushed by Jenkins CI
+resource "aws_ecr_repository" "app" {
+  for_each     = toset(["sawe-engine", "sawe-cli"])
+  name         = each.value
+  force_delete = true
+}
+
 # IAM Role for EC2 (Secrets Manager access)
 data "aws_caller_identity" "current" {}
 

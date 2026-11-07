@@ -11,7 +11,7 @@ pipeline {
     environment {
         GIT_REPO       = 'https://github.com/ron1120/devops-eks-project.git'
         // AWS on the agent must allow secretsmanager:GetSecretValue for these secrets (see terraform / configure-env).
-        AWS_REGION     = 'us-east-1'
+        AWS_REGION     = 'il-central-1'
         DOCKERHUB_REPO = 'ronsss/sawe-cli'
         // Private ECR repo name (same account/region as AWS CLI on the agent).
         ECR_REPO_NAME  = 'sawe-cli'

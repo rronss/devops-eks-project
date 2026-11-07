@@ -10,7 +10,7 @@ pipeline {
 
     environment {
         GIT_REPO       = 'https://github.com/ron1120/devops-eks-project.git'
-        AWS_REGION     = 'us-east-1'
+        AWS_REGION     = 'il-central-1'
         DOCKERHUB_REPO = 'ronsss/sawe-engine'
         ECR_REPO_NAME    = 'sawe-engine'
         VENV_DIR         = 'venv'

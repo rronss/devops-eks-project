@@ -14,7 +14,7 @@ cp .env.example .env
 
 | Variable                                      | Purpose                                                                                  |
 | --------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `AWS_REGION`                                  | AWS region (e.g. `us-east-1`) used by the CLI and Secrets Manager.                       |
+| `AWS_REGION`                                  | AWS region (e.g. `il-central-1`) used by the CLI and Secrets Manager.                       |
 | `JENKINS_EIP`                                 | Jenkins EC2 Elastic IP, consumed by [`../ansible/inventory.sh`](../ansible/inventory.sh). |
 | `DOCKERHUB_USERNAME` / `DOCKERHUB_PASSWORD`   | Docker Hub credentials pushed to Secrets Manager.                                        |
 | `AWS_DOCKERHUB_SECRET_ID`                     | Secrets Manager secret name (e.g. `DockerHubCredentials`).                               |

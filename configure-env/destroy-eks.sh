@@ -25,7 +25,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 TF_DIR="${REPO_ROOT}/terraform/devops-eks-cluster"
 ENV_FILE="${SCRIPT_DIR}/.env"
 
-AWS_REGION="${AWS_REGION:-us-east-1}"
+AWS_REGION="${AWS_REGION:-il-central-1}"
 EKS_CLUSTER_NAME="${EKS_CLUSTER_NAME:-devops-eks-cluster}"
 VPC_NAME_TAG="${VPC_NAME_TAG:-devops-eks-project-eks-vpc}"
 

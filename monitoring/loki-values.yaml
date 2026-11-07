@@ -13,6 +13,8 @@
 
 loki:
   enabled: true
+  # Grafana allows one default data source; Prometheus keeps it.
+  isDefault: false
   persistence:
     enabled: true
     storageClassName: gp2
