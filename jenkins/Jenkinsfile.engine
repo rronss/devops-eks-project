@@ -87,6 +87,7 @@ pipeline {
                     . ${env.VENV_DIR}/bin/activate
                     pip install --upgrade pip
                     pip install -r engine/requirements.txt
+                    pip install flake8
                     mkdir -p reports
                 """
             }
@@ -97,12 +98,7 @@ pipeline {
             steps {
                 sh """
                     . ${env.VENV_DIR}/bin/activate
-                    pylint engine/modules/*/[a-z]*.py \
-                        --disable=C0114,C0115,C0116,C0103,C0301,R0903,W0613,W0622,E0401,C0411,W0612,R0801,W0611 \
-                        --fail-under=5.0 --output-format=colorized || true
-                    find engine/ -maxdepth 1 -name '*.py' | head -20 | xargs -r pylint \
-                        --disable=C0114,C0115,C0116,C0103,C0301,R0903,W0613,W0622,E0401,C0411,W0612,R0801,W0611 \
-                        --fail-under=5.0 --output-format=colorized || true
+                    flake8 --select=E9,F63,F7,F82 engine/modules/
                 """
             }
         }
@@ -133,24 +129,25 @@ pipeline {
             }
         }
 
+        stage('Docker Build') {
+            when { environment name: 'ENGINE_CHANGED', value: 'true' }
+            steps {
+                sh """
+                    docker build -f docker/Dockerfile.engine \
+                        --build-arg VERSION=${env.SEM_VERSION} \
+                        -t ${env.DOCKERHUB_REPO}:${env.IMAGE_TAG} \
+                        -t ${env.DOCKERHUB_REPO}:${env.BUILD_TAG} \
+                        -t ${env.DOCKERHUB_REPO}:latest .
+                """
+            }
+        }
+
         stage('E2E Tests') {
             when { environment name: 'ENGINE_CHANGED', value: 'true' }
             steps {
                 sh """
                     . ${env.VENV_DIR}/bin/activate
-                    set +x
-                    SECRET=\$(aws secretsmanager get-secret-value --secret-id DockerHubCredentials --region ${env.AWS_REGION} --query SecretString --output text 2>/dev/null || true)
-                    if [ -n "\$SECRET" ]; then
-                        DOCKER_USER=\$(echo "\$SECRET" | python3 -c "import sys,json; print(json.load(sys.stdin)['username'])")
-                        DOCKER_PASS=\$(echo "\$SECRET" | python3 -c "import sys,json; print(json.load(sys.stdin)['password'])")
-                        echo "\$DOCKER_PASS" | docker login -u "\$DOCKER_USER" --password-stdin
-                    fi
-                    set -x
-                    docker pull ${env.DOCKERHUB_REPO}:latest
-                    docker image inspect ${env.DOCKERHUB_REPO}:latest --format 'E2E engine image id={{.Id}}'
-                    # Published image may run as non-root while the onefile still mkdirs under cwd → PermissionError.
-                    # Run as root for E2E only (matches Jenkinsfile.cli); rebuild/push engine image after Dockerfile chown for a stricter setup.
-                    docker run -d -P --user root --name ${env.E2E_ENGINE_CONTAINER} ${env.DOCKERHUB_REPO}:latest
+                    docker run -d -P --name ${env.E2E_ENGINE_CONTAINER} ${env.DOCKERHUB_REPO}:${env.BUILD_TAG}
                     ENGINE_HOST=172.17.0.1
                     if command -v getent >/dev/null 2>&1 && getent hosts host.docker.internal >/dev/null 2>&1; then
                         ENGINE_HOST=host.docker.internal
@@ -185,19 +182,6 @@ pipeline {
                     sh "docker stop ${env.E2E_ENGINE_CONTAINER} || true && docker rm ${env.E2E_ENGINE_CONTAINER} || true"
                     junit allowEmptyResults: true, testResults: 'reports/engine-e2e.xml'
                 }
-            }
-        }
-
-        stage('Docker Build') {
-            when { environment name: 'ENGINE_CHANGED', value: 'true' }
-            steps {
-                sh """
-                    docker build -f docker/Dockerfile.engine \
-                        --build-arg VERSION=${env.SEM_VERSION} \
-                        -t ${env.DOCKERHUB_REPO}:${env.IMAGE_TAG} \
-                        -t ${env.DOCKERHUB_REPO}:${env.BUILD_TAG} \
-                        -t ${env.DOCKERHUB_REPO}:latest .
-                """
             }
         }
 

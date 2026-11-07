@@ -21,7 +21,7 @@ prometheus:
               storage: 20Gi
 
 grafana:
-  adminPassword: "admin"            # change after first login via the UI
+  # No adminPassword here: the chart generates a random one (configure-eks.yml prints it).
   defaultDashboardsTimezone: browser
   service:
     type: LoadBalancer              # exposes Grafana via an AWS ELB

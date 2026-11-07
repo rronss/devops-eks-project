@@ -95,7 +95,7 @@ resource "aws_security_group" "ec2_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.admin_cidr]
   }
 
   ingress {
@@ -106,14 +106,13 @@ resource "aws_security_group" "ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # node_exporter — scraped by Prometheus on EKS via the Jenkins EIP.
-  # Lab posture: open to the world. Tighten to your office/NAT CIDR in production.
+  # node_exporter — only from your own IP.
   ingress {
     description = "node_exporter metrics (Prometheus scrape target)"
     from_port   = 9100
     to_port     = 9100
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.admin_cidr]
   }
 
   egress {
@@ -162,7 +161,8 @@ resource "aws_iam_role_policy" "jenkins_secrets" {
         ]
         Resource = [
           aws_secretsmanager_secret.dockerhub_credentials.arn,
-          aws_secretsmanager_secret.git_credentials.arn
+          aws_secretsmanager_secret.git_credentials.arn,
+          "arn:aws:secretsmanager:${var.aws_region}:${data.aws_caller_identity.current.account_id}:secret:SlackWebhookUrl-*"
         ]
       },
       {
@@ -274,7 +274,7 @@ resource "aws_instance" "app" {
 
   metadata_options {
     http_endpoint               = "enabled"
-    http_tokens                 = "optional"
+    http_tokens                 = "required"
     http_put_response_hop_limit = 2
   }
 
@@ -337,28 +337,19 @@ variable "existing_vpc_id" {
   default     = ""
 }
 
+variable "admin_cidr" {
+  description = "Your public IP as a /32 (e.g. 1.2.3.4/32). SSH and node_exporter are only open to it"
+  type        = string
+}
+
 variable "eks_cluster_name" {
   description = "EKS cluster name for Jenkins CD (must match jenkins/Jenkinsfile.cd EKS_CLUSTER_NAME)"
   type        = string
   default     = "devops-eks-cluster"
 }
 
-# Elastic IP — reuse existing if found by Name tag, otherwise create
-data "aws_eips" "existing" {
-  filter {
-    name   = "tag:Name"
-    values = ["${var.project_name}-eip"]
-  }
-}
-
-locals {
-  eip_exists        = length(data.aws_eips.existing.allocation_ids) > 0
-  eip_allocation_id = local.eip_exists ? data.aws_eips.existing.allocation_ids[0] : aws_eip.jenkins[0].id
-  eip_public_ip     = local.eip_exists ? data.aws_eips.existing.public_ips[0] : aws_eip.jenkins[0].public_ip
-}
-
+# Elastic IP
 resource "aws_eip" "jenkins" {
-  count  = local.eip_exists ? 0 : 1
   domain = "vpc"
 
   tags = {
@@ -368,12 +359,12 @@ resource "aws_eip" "jenkins" {
 
 resource "aws_eip_association" "jenkins" {
   instance_id   = aws_instance.app.id
-  allocation_id = local.eip_allocation_id
+  allocation_id = aws_eip.jenkins.id
 }
 
 # Outputs
 output "instance_public_ip" {
-  value = local.eip_public_ip
+  value = aws_eip.jenkins.public_ip
 }
 
 output "vpc_id" {

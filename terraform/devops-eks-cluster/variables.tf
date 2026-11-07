@@ -58,13 +58,6 @@ variable "min_size" {
   default     = 1
 }
 
-variable "grafana_admin_password" {
-  description = "Admin password for Grafana"
-  type        = string
-  default     = "admin"
-  sensitive   = true
-}
-
 variable "jenkins_cd_role_name" {
   description = "IAM role name of the Jenkins EC2 instance (infrastructure/jenkins-master-aws). Empty string skips EKS access entry."
   type        = string

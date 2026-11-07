@@ -13,7 +13,8 @@
     container_name: "jenkins"
     jenkins_home: "/var/lib/docker/volumes/jenkins_home/_data"
     jenkins_admin_user: "admin"
-    jenkins_admin_password: "admin"
+    # Read from configure-env/.env (JENKINS_ADMIN_PASSWORD), never hardcoded.
+    jenkins_admin_password: "{{ lookup('ansible.builtin.ini', 'JENKINS_ADMIN_PASSWORD', type='properties', file=playbook_dir + '/../../configure-env/.env') }}"
     # Job definitions only. Pipelines use AWS (Secrets Manager + IAM on the Jenkins host) for Docker Hub and Git tag; SCM has no Jenkins credential if repo is public.
     jenkins_cli_ci_repo: "https://github.com/ron1120/devops-eks-project.git"
     jenkins_cli_ci_branch: "*/main"
@@ -29,6 +30,12 @@
     jenkins_cd_jenkinsfile: "jenkins/Jenkinsfile.cd"
 
   pre_tasks:
+    - name: Require a strong Jenkins admin password
+      ansible.builtin.assert:
+        that: jenkins_admin_password | length >= 12
+        fail_msg: "Set JENKINS_ADMIN_PASSWORD (12+ characters) in configure-env/.env"
+      no_log: true
+
     - name: Resolve Jenkins container image reference
       ansible.builtin.set_fact:
         docker_image: >-

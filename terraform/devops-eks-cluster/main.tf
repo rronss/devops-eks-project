@@ -202,7 +202,7 @@ resource "aws_iam_role_policy_attachment" "node_group_ebs_csi_policy" {
 resource "aws_eks_cluster" "eks" {
   name     = var.cluster_name
   role_arn = aws_iam_role.eks_cluster_role.arn
-  version  = "1.30"
+  version  = "1.35"
 
   # Required for aws_eks_access_entry / policy associations (Jenkins CD kubectl).
   access_config {
@@ -326,24 +326,5 @@ resource "aws_eks_addon" "ebs_csi_driver" {
   depends_on = [
     aws_eks_node_group.nodes,
     aws_iam_role_policy_attachment.ebs_csi
-  ]
-}
-
-# --------- Helm: Prometheus + Grafana ---------
-
-resource "helm_release" "prometheus_grafana" {
-  name             = "kube-prometheus-stack"
-  repository       = "https://prometheus-community.github.io/helm-charts"
-  chart            = "kube-prometheus-stack"
-  namespace        = "monitoring"
-  create_namespace = true
-
-  set {
-    name  = "grafana.adminPassword"
-    value = var.grafana_admin_password
-  }
-
-  depends_on = [
-    aws_eks_node_group.nodes
   ]
 }

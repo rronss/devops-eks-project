@@ -105,7 +105,7 @@ pipeline {
                     . ${env.VENV_DIR}/bin/activate
                     pylint cli/sawectl.py \
                         --disable=C0114,C0115,C0116,C0103,C0301,R0903,W0613,W0622,E0401,C0411,W0612,R0801,W0611,R0914,R0912,R0915,W0102 \
-                        --fail-under=5.0 --output-format=colorized || true
+                        --fail-under=5.0 --output-format=colorized
                 """
             }
         }
