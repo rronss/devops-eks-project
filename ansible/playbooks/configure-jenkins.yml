@@ -16,15 +16,15 @@
     # Read from configure-env/.env (JENKINS_ADMIN_PASSWORD), never hardcoded.
     jenkins_admin_password: "{{ lookup('ansible.builtin.ini', 'JENKINS_ADMIN_PASSWORD', type='properties', file=playbook_dir + '/../../configure-env/.env') }}"
     # Job definitions only. Pipelines use AWS (Secrets Manager + IAM on the Jenkins host) for Docker Hub and Git tag; SCM has no Jenkins credential if repo is public.
-    jenkins_cli_ci_repo: "https://github.com/ron1120/devops-eks-project.git"
+    jenkins_cli_ci_repo: "https://github.com/rronss/devops-eks-project.git"
     jenkins_cli_ci_branch: "*/main"
     jenkins_cli_ci_git_credentials: ""
     jenkins_cli_ci_jenkinsfile: "jenkins/Jenkinsfile.cli"
-    jenkins_engine_ci_repo: "https://github.com/ron1120/devops-eks-project.git"
+    jenkins_engine_ci_repo: "https://github.com/rronss/devops-eks-project.git"
     jenkins_engine_ci_branch: "*/main"
     jenkins_engine_ci_git_credentials: ""
     jenkins_engine_ci_jenkinsfile: "jenkins/Jenkinsfile.engine"
-    jenkins_cd_repo: "https://github.com/ron1120/devops-eks-project.git"
+    jenkins_cd_repo: "https://github.com/rronss/devops-eks-project.git"
     jenkins_cd_branch: "*/main"
     jenkins_cd_git_credentials: ""
     jenkins_cd_jenkinsfile: "jenkins/Jenkinsfile.cd"

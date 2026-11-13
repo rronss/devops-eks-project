@@ -6,7 +6,7 @@
 FROM python:3.12-slim
 
 ARG VERSION=unknown
-LABEL maintainer="ron1120"
+LABEL maintainer="rronss"
 LABEL description="SeyoAWE Engine"
 LABEL org.opencontainers.image.version="${VERSION}"
 
